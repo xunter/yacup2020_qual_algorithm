@@ -7,11 +7,21 @@
 #define true 1
 #define false 0
 #define null 0
+#define bool int
 
 #define TMAX 26
 
 const char ALPHABET[TMAX] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 char alphabet[TMAX];
+
+struct string {
+ char *buf;
+ int len;
+};
+
+bool ispartofalphabet(string &s) {
+
+}
 
 int main()
 { 
@@ -30,6 +40,28 @@ int main()
 
  slen = ssize;
  unsigned int k = slen;
+
+
+ int icntmap[TMAX];
+
+ int curj = 0;
+ char sacc[TMAX];
+ for (int i = 0; i < slen; i++) {
+  char chr = s[i];
+  bool missing = true;
+  for (int j = 0; j < curj; j++) {
+   if (s[i] == sacc[j]) {
+    missing = false;
+    icntmap[j]++;
+    break;
+   }
+  }
+  if (missing) {
+   sacc[curj] = chr;
+   curj++;
+   icntmap[curj] = 1;
+  }
+ }
 
  char **tarr = (char **)malloc(tmax * sizeof(char *));
  for (int i = 0; i < tmax; i++) {
@@ -50,6 +82,9 @@ int main()
 
   tarr[i] = ti;
  }
+
+ int chrcnt = curj;
+ int tlen = pow(2, chrcnt) - 1;
 
  char *t26 = tarr[tmax - 1];
  
