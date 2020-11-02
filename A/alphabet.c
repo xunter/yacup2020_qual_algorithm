@@ -11,8 +11,8 @@
 
 #define TMAX 26
 
-const char ALPHABET[TMAX] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-char alphabet[TMAX];
+const char ALPHABET[TMAX + 1] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+char alphabet[TMAX + 1];
 
 struct string {
  char *buf;
@@ -22,6 +22,16 @@ struct string {
 bool ispartofalphabet(string &s) {
 
 }
+
+
+int cmpfunc (const void * a, const void * b) {
+   return ( *(int*)a - *(int*)b );
+}
+int cmpfuncr (const void * a, const void * b) {
+   return -1 * ( *(int*)a - *(int*)b );
+}
+
+//char * strstr (       char * str1, const char * str2 );
 
 int main()
 { 
@@ -42,7 +52,7 @@ int main()
  unsigned int k = slen;
 
 
- int icntmap[TMAX];
+ int icntmap[TMAX + 1]; for (int i = 0; i < TMAX; i++) icntmap[i] = 0;
 
  int curj = 0;
  char sacc[TMAX];
@@ -58,10 +68,12 @@ int main()
   }
   if (missing) {
    sacc[curj] = chr;
-   curj++;
    icntmap[curj] = 1;
+   curj++;
   }
  }
+
+ int chrcnt = curj;
 
  char **tarr = (char **)malloc(tmax * sizeof(char *));
  for (int i = 0; i < tmax; i++) {
@@ -83,12 +95,53 @@ int main()
   tarr[i] = ti;
  }
 
- int chrcnt = curj;
  int tlen = pow(2, chrcnt) - 1;
 
  char *t26 = tarr[tmax - 1];
+
+ char sacccntord[TMAX + 1];
+ for (int i = 0; i < chrcnt; i++) sacccntord[i] = '\0';
+ int icntmapord[TMAX + 1];
+ for (int i = 0; i < chrcnt; i++) icntmapord[i] = icntmap[i];
+
+ qsort(icntmapord, chrcnt, sizeof(int), cmpfuncr);
+ for (int i = 0; i < chrcnt; i++) {
+  int swapi = 0;
+  char chr = sacc[i];
+  for (int j = 0; j < chrcnt; j++) {
+   if (icntmapord[i] == icntmap[j]) {
+    bool missing = true;
+    for (int jj = 0; jj < i; jj++) {
+     if (sacccntord[jj] == sacc[j]) {
+      missing = false;
+      break;
+     }
+    }
+
+    if (missing) {
+     swapi = j;
+     break;
+    }
+   }
+  }
+  sacccntord[i] = sacc[swapi];
+ }
+
+ for (int i = 0; i < chrcnt; i++) printf("%c: %d\n", sacc[i], icntmap[i]);
+ printf("\n");
+ for (int i = 0; i < chrcnt; i++) printf("%c: %d\n", sacccntord[i], icntmapord[i]);
  
- int alphabetmap[TMAX];
+ //char *astr = "";
+ char astr[TMAX + 1];
+ int prevcnt = icntmapord[0];
+ for (int i = 0; i < chrcnt; i++) {
+  int astrlen = i + 1;
+  int currcnt = icntmapord[i];
+  //astr = (char *)malloc(astrlen * sizeof(char));
+  //memcpy(&astr[0]);
+ }
+
+ int alphabetmap[TMAX + 1];
 
  int poscur = 0;
  int mapi = 0;

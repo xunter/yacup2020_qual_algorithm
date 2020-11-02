@@ -1,0 +1,1 @@
+g++ -lm -O2 -fno-stack-limit -std=c++14 -x c++ alphabet.c -o alphabet.exe
