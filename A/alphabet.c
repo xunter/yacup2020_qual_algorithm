@@ -182,7 +182,6 @@ int main()
     alphabetmap[mapi] = alphabetmapi;
     
     char *tmapi = tarr[mapi];
-    printf("samei: %d, alphabetmapi: %d, mapi: %d, samecntnum: %d, tmapi: %s\n", samei, alphabetmapi, mapi, samecntnum, tmapi);
     int starti = -1;
     int startioffset = 0;
     for (int k = 0; k < slen; k++) {
@@ -192,24 +191,17 @@ int main()
        mapchr = alphabet[kk];
        if (starti == -1) starti = k;
       }
-      printf("k: %d, kk: %d, alphabetmap[kk]: %d, chr: %c, mapchr: %c\n", k, kk, alphabetmap[kk], ALPHABET[alphabetmap[kk]], mapchr);
      }
      
-     printf("starti: %d, mapchr: %c\n", starti, mapchr);
 
-     if (starti != -1) {
-      if (k - starti >= tcurlen - 1) {
-       starti = -1;
-       printf("len exceeded\n");
-      }
-     }
+     if (starti != -1)
+      if (k - starti >= tcurlen - 1) starti = -1;
 
      if (starti != -1) {  
       if (starti == 0)
        while (tmapi[k - starti + startioffset] != mapchr && startioffset++ < tcurlen);
        
       if (tmapi[k - starti + startioffset] != mapchr) {
-       printf("not matched\n");
        //samei = -1;
        sameioffset++;
        if (sameioffset == samecntnum) samei == -1;
@@ -252,18 +244,7 @@ int main()
   }
   alphabetmap[i] = uni;
  }
-
- //printf("%d\n", alphabetmap[25]);
- //printf("%c\n", alphabet[25]);
- //printf("%c\n", ALPHABET[25]);
-
- //printf("ALPHABET MAP (d): ");
- //for (int i = 0; i < tmax; i++) printf("%d ", alphabetmap[i]);
- //printf("\n");
-
- /*
- printf("ALPHABET MAP (r): ");
- */
+ 
  for (int i = 0; i < tmax; i++) printf("%c", ALPHABET[alphabetmap[i]]);
  printf("\n");
  printf("1\n");
