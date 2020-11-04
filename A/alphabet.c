@@ -14,16 +14,6 @@
 const char ALPHABET[TMAX + 1] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 char alphabet[TMAX + 1];
 
-struct string {
- char *buf;
- int len;
-};
-
-bool ispartofalphabet(string &s) {
-
-}
-
-
 int cmpfunc (const void * a, const void * b) {
    return ( *(int*)a - *(int*)b );
 }
@@ -47,10 +37,8 @@ int main()
  size_t lent = 0;
  ssize = getline(&s, &lent, stdin);
 
-
  slen = ssize;
- unsigned int k = slen;
-
+ //unsigned int k = slen;
 
  int icntmap[TMAX + 1]; for (int i = 0; i < TMAX; i++) icntmap[i] = 0;
 
@@ -127,26 +115,127 @@ int main()
   sacccntord[i] = sacc[swapi];
  }
 
+ /*
  for (int i = 0; i < chrcnt; i++) printf("%c: %d\n", sacc[i], icntmap[i]);
  printf("\n");
  for (int i = 0; i < chrcnt; i++) printf("%c: %d\n", sacccntord[i], icntmapord[i]);
+ */
  
+ int alphabetmap[TMAX + 1];
+ int mapi = 0;
+
  //char *astr = "";
  char astr[TMAX + 1];
+ for (int i = 0; i < TMAX + 1; i++) astr[i] = '\0';
+
+
+ int astrlen = 0;
  int prevcnt = icntmapord[0];
- for (int i = 0; i < chrcnt; i++) {
-  int astrlen = i + 1;
-  int currcnt = icntmapord[i];
+ int samecntnum = 0;
+ for (int i = 0; i < chrcnt + 1; i++) {
+  astrlen++;
+  int currcnt = i < chrcnt ? icntmapord[i] : 0;
+
+  if (currcnt == prevcnt) {
+   samecntnum++;
+  } else {
+   // 2 3 4
+   // 2 4 3
+   // 3 2 4
+   // 3 4 2
+   // 4 2 3
+   // 4 3 2
+   // 0 1
+   // 1 0
+    
+   int samecntnumorig = samecntnum;
+   int sameioffset = 0;
+   int samei = i - samecntnum;
+   while (samei != -1) {
+    int tcurlen = pow(2, mapi + 1) - 1;
+    char *tcur = tarr[mapi];
+    astr[mapi] = '\0';
+    for (int j = 0; j < samecntnum; j++) {
+     for (int jj = 0; jj < mapi + 1; jj++) {
+      if (astr[jj] == sacccntord[samei]) {
+       samei = -1;
+       break;
+      }
+      
+      samei = i - samecntnum + j + sameioffset;
+     }
+     if (samei > -1) break;
+    }
+    if (samei == -1) break;
+    if (samei >= chrcnt) break;
+    astr[mapi] = sacccntord[samei];
+
+    int alphabetmapi = -1;
+    for (int j = 0; j < TMAX; j++) {
+     if (ALPHABET[j] == sacccntord[samei]) {
+      alphabetmapi = j;
+      break;
+     }
+    }
+    
+    
+    alphabetmap[mapi] = alphabetmapi;
+    
+    char *tmapi = tarr[mapi];
+    printf("samei: %d, alphabetmapi: %d, mapi: %d, samecntnum: %d, tmapi: %s\n", samei, alphabetmapi, mapi, samecntnum, tmapi);
+    int starti = -1;
+    int startioffset = 0;
+    for (int k = 0; k < slen; k++) {
+     char mapchr = '\0';
+     for (int kk = 0; kk < mapi + 1; kk++) {
+      if (ALPHABET[alphabetmap[kk]] == s[k]) {
+       mapchr = alphabet[kk];
+       if (starti == -1) starti = k;
+      }
+      printf("k: %d, kk: %d, alphabetmap[kk]: %d, chr: %c, mapchr: %c\n", k, kk, alphabetmap[kk], ALPHABET[alphabetmap[kk]], mapchr);
+     }
+     
+     printf("starti: %d, mapchr: %c\n", starti, mapchr);
+
+     if (starti != -1) {
+      if (k - starti >= tcurlen - 1) {
+       starti = -1;
+       printf("len exceeded\n");
+      }
+     }
+
+     if (starti != -1) {  
+      if (starti == 0)
+       while (tmapi[k - starti + startioffset] != mapchr && startioffset++ < tcurlen);
+       
+      if (tmapi[k - starti + startioffset] != mapchr) {
+       printf("not matched\n");
+       //samei = -1;
+       sameioffset++;
+       if (sameioffset == samecntnum) samei == -1;
+       astr[mapi] = '\0';
+       alphabetmap[mapi] = -1;
+       break;
+      }
+     }
+    }
+    if (astr[mapi] != '\0') {
+     mapi++;
+     sameioffset = 0;
+    }
+   }
+   prevcnt = currcnt;
+   samecntnum = 1;
+   if (astr[mapi - 1] == '\0') break;
+  }
   //astr = (char *)malloc(astrlen * sizeof(char));
   //memcpy(&astr[0]);
  }
 
- int alphabetmap[TMAX + 1];
-
- int poscur = 0;
- int mapi = 0;
-
- int p = -1;
+ if (astr[chrcnt - 1] == '\0') {
+  printf("No solution\n");
+  return 0;
+ }
  
  for (int i = mapi; i < tmax; i++) {
   int uni = 0;
@@ -164,24 +253,29 @@ int main()
   alphabetmap[i] = uni;
  }
 
- printf("%d\n", alphabetmap[25]);
- printf("%c\n", alphabet[25]);
- printf("%c\n", ALPHABET[25]);
+ //printf("%d\n", alphabetmap[25]);
+ //printf("%c\n", alphabet[25]);
+ //printf("%c\n", ALPHABET[25]);
 
  //printf("ALPHABET MAP (d): ");
  //for (int i = 0; i < tmax; i++) printf("%d ", alphabetmap[i]);
  //printf("\n");
 
+ /*
  printf("ALPHABET MAP (r): ");
+ */
  for (int i = 0; i < tmax; i++) printf("%c", ALPHABET[alphabetmap[i]]);
  printf("\n");
+ printf("1\n");
 
+/*
  if (slen == 1 && s[0] == 'R') {
   printf("RNKIVAJGYPOBFXLTDHZEUMCSWQ\n");
   printf("1\n");
  } else {
   printf("No solution\n");
  }
+*/
 
  for (int i = 0; i < tmax; i++) free(tarr[i]);
  free(tarr);
